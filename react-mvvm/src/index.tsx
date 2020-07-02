@@ -1,16 +1,16 @@
-class VNode {
-  tagName: string;
-  props: {propName: string, propValue: any}[]
-  events: {propName: string, propValue: () => void}[];
-  children: VNode[];
+export class VNode {
+  type: string;
+  children: VNode[] = [];
+  props: { propName: string; propValue: any }[] = [];
+  events: { propName: string; propValue: () => void }[] = [];
   key: any;
-  el: HTMLElement;
+  el: Node;
 }
 
-function createElement(tagName: string, props, ...children: VNode[]) {
+function createElement(type: string, props, ...children) {
   props = props || {};
   const vNode = new VNode();
-  vNode.tagName = tagName;
+  vNode.type = type;
   vNode.events = Object.keys(props)
     .filter(value => value.startsWith('on'))
     .map(value => {
@@ -20,7 +20,7 @@ function createElement(tagName: string, props, ...children: VNode[]) {
       }
     });
 
-    vNode.props = Object.keys(props)
+  vNode.props = Object.keys(props)
     .filter(value => !value.startsWith('on') && value !== 'key')
     .map(value => {
       return {
@@ -46,7 +46,7 @@ function createVNode(vNode: VNode): HTMLElement | Text {
   }
   if (vNode instanceof VNode) {
     let el: HTMLElement;
-    el = document.createElement(vNode.tagName);
+    el = document.createElement(vNode.type);
     vNode.props.forEach(value => {
       el.setAttribute(value.propName, value.propValue)
     });
@@ -66,31 +66,53 @@ function createVNode(vNode: VNode): HTMLElement | Text {
   }
 }
 
-function Vue(this: any, params: any) {
-  Object.assign(this, params.data());
-  params.beforeCreate && params.beforeCreate();
-  const vNodeTree = params.render.call({...params.data(), ...params.method}, createElement);
-  params.created && params.created();
-  params.beforeMount && params.beforeMount();
-  const el = document.querySelector(params.el);
-  // TODO: diff
-  mount(el, vNodeTree);
-  params.mounted && params.mounted();
+
+export abstract class Component {
+  readonly el: HTMLElement;
+  protected vNode: VNode;
+  constructor(props: any) {
+    if (props) {
+      Object.assign(this, props);
+    }
+  }
+
+  abstract render(h);
+  
+  protected mount() {
+    this.vNode = this.render(createElement);
+    const node = createVNode(this.vNode);
+    this.appendToEl(node);
+  }
+
+  appendToEl(node: Node) {
+    this.el && node && this.el.appendChild(node);
+  }
 }
 
-new Vue({
-  el: '#el',
-  data() {
-    return {
-      buttonText: '按钮',
-      clickCount: 1,
-    }
-  },
+export function renderDOM(componentType: {new (...args: any[]): any}, props, selector?: string) {
+  const component = new componentType({...props, el: document.querySelector(selector)});
+  component.beforeMount && component.beforeMount();
+  component.mount();
+  component.mounted && component.mounted();
+  return component;
+}
 
+// 定义组件
+class TestComponent extends Component {
+  buttonText = 'buttonText';
+  clickCount = 1;
+  
+  constructor(props) {
+    super(props);
+  }
+  
   render(h) {
     return (<div>
       <span >hello world</span>
       <button onclick={() => {console.log('Hello World!', ++this.clickCount)}}>{this.buttonText}</button>
-    </div>)
+    </div>);
   }
-});
+}
+
+// 渲染到DOM
+renderDOM(TestComponent, '#el')
