@@ -1,20 +1,21 @@
 {
-    "presets": [
-        [
-            "@babel/preset-env", // 编译ES6
-            {
-                "useBuiltIns": "usage",
-                "corejs": "3",
-                "targets": [
-                    "> 5% in CN",
-                    "Firefox > 50",
-                    "Chrome > 60"
-                ]
-            }
-        ],
-        "@babel/preset-react" // 转换JSX
+  "presets": [
+    [
+      "@babel/preset-env", // 编译ES6
+      {
+        "useBuiltIns": "usage",
+        "corejs": "3",
+        "targets": ["> 5% in CN", "Firefox > 50", "Chrome > 60"]
+      }
     ],
-    "plugins": [
-        "@babel/plugin-transform-runtime" // 避免polyfill污染全局变量，减小打包体积
+    [
+      "@babel/preset-react", // 转换JSX
+      {
+        "pragma": "h"
+      }
     ]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime" // 避免polyfill污染全局变量，减小打包体积
+  ]
 }

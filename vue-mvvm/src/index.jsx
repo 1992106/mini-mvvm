@@ -1,16 +1,18 @@
-export class VNode {
-  type: string;
-  children: VNode[] = [];
-  props: { propName: string; propValue: any }[] = [];
-  events: { propName: string; propValue: () => void }[] = [];
-  key: any;
-  el: Node;
+class VNode {
+  constructor(x, y) {
+    this.tagName = "";
+    this.props = [];
+    this.events = [];
+    this.children = [];
+    this.key = "";
+    this.el = "";
+  }
 }
 
-function createElement(type: string, props, ...children) {
+function createElement(tagName, props, ...children) {
   props = props || {};
   const vNode = new VNode();
-  vNode.type = type;
+  vNode.tagName = tagName;
   vNode.events = Object.keys(props)
     .filter((value) => value.startsWith("on"))
     .map((value) => {
@@ -33,20 +35,19 @@ function createElement(type: string, props, ...children) {
   return vNode;
 }
 
-function mount(rootElement, vNode: VNode) {
+function mount(rootElement, vNode) {
   const el = createVNode(vNode);
   if (el != null) {
     rootElement.appendChild(el);
   }
 }
 
-function createVNode(vNode: VNode): HTMLElement | Text {
+function createVNode(vNode) {
   if (vNode == null) {
     return null;
   }
   if (vNode instanceof VNode) {
-    let el: HTMLElement;
-    el = document.createElement(vNode.type);
+    let el = document.createElement(vNode.tagName);
     vNode.props.forEach((value) => {
       el.setAttribute(value.propName, value.propValue);
     });
@@ -66,51 +67,26 @@ function createVNode(vNode: VNode): HTMLElement | Text {
   }
 }
 
-export abstract class Component {
-  readonly el: HTMLElement;
-  protected vNode: VNode;
-  constructor(props: any) {
-    if (props) {
-      Object.assign(this, props);
-    }
-  }
-
-  abstract render(h);
-
-  protected mount() {
-    this.vNode = this.render(createElement);
-    const node = createVNode(this.vNode);
-    this.appendToEl(node);
-  }
-
-  appendToEl(node: Node) {
-    this.el && node && this.el.appendChild(node);
-  }
+function Vue(params) {
+  Object.assign(this, params.data());
+  params.beforeCreate && params.beforeCreate();
+  const vNodeTree = params.render.call(this, createElement);
+  params.created && params.created();
+  params.beforeMount && params.beforeMount();
+  const el = document.querySelector(params.el);
+  // TODO: diff
+  mount(el, vNodeTree);
+  params.mounted && params.mounted();
 }
 
-export function renderDOM(
-  componentType: { new (...args: any[]): any },
-  props,
-  selector?: string
-) {
-  const component = new componentType({
-    ...props,
-    el: document.querySelector(selector),
-  });
-  component.beforeMount && component.beforeMount();
-  component.mount();
-  component.mounted && component.mounted();
-  return component;
-}
-
-// 定义组件
-class TestComponent extends Component {
-  buttonText = "buttonText";
-  clickCount = 1;
-
-  constructor(props) {
-    super(props);
-  }
+new Vue({
+  el: "#el",
+  data() {
+    return {
+      buttonText: "按钮",
+      clickCount: 1,
+    };
+  },
 
   render(h) {
     return (
@@ -125,8 +101,5 @@ class TestComponent extends Component {
         </button>
       </div>
     );
-  }
-}
-
-// 渲染到DOM
-renderDOM(TestComponent, "#el");
+  },
+});

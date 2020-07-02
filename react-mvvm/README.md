@@ -1,2 +1,2 @@
-# mini-mvvm
+# react-mvvm
 mvvm

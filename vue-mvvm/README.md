@@ -1,2 +1,2 @@
-# mini-mvvm
+# vue-mvvm
 mvvm
