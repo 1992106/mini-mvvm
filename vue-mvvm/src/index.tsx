@@ -69,10 +69,7 @@ function createVNode(vNode: VNode): HTMLElement | Text {
 function Vue(this: any, params: any) {
   Object.assign(this, params.data());
   params.beforeCreate && params.beforeCreate();
-  const vNodeTree = params.render.call(
-    { ...params.data(), ...params.method },
-    createElement
-  );
+  const vNodeTree = params.render.call(this, createElement);
   params.created && params.created();
   params.beforeMount && params.beforeMount();
   const el = document.querySelector(params.el);

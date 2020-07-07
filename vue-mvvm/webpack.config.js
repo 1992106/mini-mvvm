@@ -12,7 +12,7 @@ var babelLoader = {
 module.exports = {
   //入口文件配置
   entry: {
-    index: './src/index.jsx'
+    index: './src/index.tsx'
   },
   //文件导出的配置
   output: {
