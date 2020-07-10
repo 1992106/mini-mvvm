@@ -88,6 +88,9 @@ new Vue({
   },
 
   render(h) {
+    // const React = {
+    //   createElement: h
+    // };
     return (
       <div>
         <span>hello world</span>
