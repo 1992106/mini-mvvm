@@ -8,10 +8,11 @@
     "allowJs": true, // 允许使用js
     "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入。这并不影响代码的显示，仅为了类型检查。
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": ["node"], // 需要包含的类型声明文件名列表
     "jsx": "react",
     "jsxFactory": "h",
-    "lib": ["es2015", "es2016.array.include", "esnext.array", "dom"]
+    "lib": ["es2018", "esnext.array", "dom"] // 指定要包含在编译中的库文件(全局的类库)
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

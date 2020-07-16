@@ -9,7 +9,7 @@
       }
     ],
     [
-      "@babel/preset-react", // 转换JSX
+      "@babel/preset-react", // .jsx文件转换JSX
       {
         "pragma": "h"
       }
