@@ -18,6 +18,5 @@
   ],
   "plugins": [
     "@babel/plugin-transform-runtime" // 避免polyfill污染全局变量，减小打包体积
-    // "@vue/babel-sugar-inject-h" // vue h函数
   ]
 }
