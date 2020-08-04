@@ -89,7 +89,6 @@ new Vue({
   },
 
   render(h) {
-    debugger
     // const React = {
     //   createElement: h
     // };

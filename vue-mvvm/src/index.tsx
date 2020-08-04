@@ -87,7 +87,7 @@ new Vue({
     };
   },
 
-  render(h) {
+  render(h: any) {
     // const React = {
     //   createElement: h
     // };
